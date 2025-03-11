@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 
 const API_URL = 'https://numbersapi.p.rapidapi.com';
 const API_HOST = 'numbersapi.p.rapidapi.com';
-const API_KEY = '0e7529a8d8msh594059cc195517dp1219c5jsnf24c1325987c'; // Replace with your actual API key
+const API_KEY = '0e7529a8d8msh594059cc195517dp1219c5jsnf24c1325987c'; 
 
 const Assignment3 = () => {
   const [month, setMonth] = useState('1');
