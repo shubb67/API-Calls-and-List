@@ -1,181 +1,109 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  Modal,
-} from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 
-// API Configuration
-const API_KEY: string = 'd35464e860msh2b80dc9c4ca5ec7p1342d0jsn4ca60d14ead';
-const API_HOST: string = 'numbersapi.p.rapidapi.com';
+const API_URL = 'https://numbersapi.p.rapidapi.com';
+const API_HOST = 'numbersapi.p.rapidapi.com';
+const API_KEY = '0e7529a8d8msh594059cc195517dp1219c5jsnf24c1325987c'; // Replace with your actual API key
 
-// Define the structure of a month object
-interface Month {
-  label: string;
-  value: string;
-}
+const Assignment3 = () => {
+  const [month, setMonth] = useState('1');
+  const [day, setDay] = useState('1');
+  const [fact, setFact] = useState('');
 
-// List of months for dropdown selection
-const months: Month[] = [
-  { label: 'January', value: '1' },
-  { label: 'February', value: '2' },
-  { label: 'March', value: '3' },
-  { label: 'April', value: '4' },
-  { label: 'May', value: '5' },
-  { label: 'June', value: '6' },
-  { label: 'July', value: '7' },
-  { label: 'August', value: '8' },
-  { label: 'September', value: '9' },
-  { label: 'October', value: '10' },
-  { label: 'November', value: '11' },
-  { label: 'December', value: '12' },
-];
-
-const App: React.FC = () => {
-  // State variables
-  const [month, setMonth] = useState<string>('');
-  const [day, setDay] = useState<string>('');
-  const [fact, setFact] = useState<string>('');
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-
-  // Fetch fact when both month and day are selected
   useEffect(() => {
     if (month && day) {
       fetchFact();
     }
   }, [month, day]);
 
-  // Function to fetch a fact from the API
-  const fetchFact = async (): Promise<void> => {
+  const fetchFact = async () => {
     try {
-      const response = await fetch(`https://${API_HOST}/${month}/${day}/date`, {
+      const response = await fetch(`${API_URL}/${month}/${day}/date?json`, {
         method: 'GET',
         headers: {
-          'X-RapidAPI-Key': API_KEY,
           'X-RapidAPI-Host': API_HOST,
+          'X-RapidAPI-Key': API_KEY,
         },
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-
-      const data: string = await response.text(); // API returns plain text
-      setFact(data);
+      const data = await response.json();
+      setFact(data.text);
     } catch (error) {
-      console.error(error);
-      setFact('Error fetching fact');
+      console.error('Error fetching fact:', error);
     }
   };
 
   return (
     <View style={styles.container}>
-       {/* Display Fetched Fact */}
-       {fact ? <Text style={styles.fact}>{fact}</Text> : null}
-      {/* Dropdown Button to Select Month */}
-      <TouchableOpacity
-        style={styles.dropdown}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.dropdownText}>
-          {month ? months.find((m) => m.value === month)?.label : 'Select Month'}
-        </Text>
-      </TouchableOpacity>
-
-      {/* Modal for Month Selection */}
-      <Modal visible={modalVisible} transparent animationType="slide">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <FlatList
-              data={months}
-              keyExtractor={(item) => item.value}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.option}
-                  onPress={() => {
-                    setMonth(item.value);
-                    setModalVisible(false);
-                  }}
-                >
-                  <Text style={styles.optionText}>{item.label}</Text>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        </View>
-      </Modal>
-
-      {/* Input for Day Selection */}
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Day (1-31)"
-        keyboardType="numeric"
-        maxLength={2}
-        onChangeText={setDay}
-        value={day}
-      />
-
-     
+      <Text style={styles.header}>Interesting Date Facts</Text>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Enter Month:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="1-12"
+          keyboardType="numeric"
+          maxLength={2}
+          value={month}
+          onChangeText={(text) => setMonth(text)}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Enter Day:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="1-31"
+          keyboardType="numeric"
+          maxLength={2}
+          value={day}
+          onChangeText={(text) => setDay(text)}
+        />
+      </View>
+      {fact ? <Text style={styles.fact}>{fact}</Text> : null}
     </View>
   );
 };
 
-// Styles for UI Components
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 50,
+    backgroundColor: '#ffffff',
   },
-  dropdown: {
-    width: '80%',
-    padding: 15,
-    borderWidth: 1,
-    borderRadius: 5,
+  header: {
+    fontSize: 22,
+    fontWeight: 'bold',
     marginBottom: 20,
-    alignItems: 'center',
+    color: '#333',
   },
-  dropdownText: {
+  inputContainer: {
+    width: '80%',
+    marginBottom: 20,
+  },
+  label: {
     fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 5,
   },
   input: {
-    width: '80%',
+    width: '100%',
+    height: 40,
     borderWidth: 1,
-    padding: 10,
-    marginBottom: 20,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    backgroundColor: '#f9f9f9',
     textAlign: 'center',
   },
   fact: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    alignSelf: 'center',
-    width: '80%',
-  },
-  option: {
+    marginTop: 20,
     padding: 10,
-    borderBottomWidth: 1,
-  },
-  optionText: {
-    fontSize: 16,
-    textAlign: 'center',
+    backgroundColor: '#e3f2fd',
+    borderRadius: 5,
   },
 });
 
-export default App;
+export default Assignment3;
