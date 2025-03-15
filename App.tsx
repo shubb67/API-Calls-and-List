@@ -6,8 +6,8 @@ const API_HOST = 'numbersapi.p.rapidapi.com';
 const API_KEY = '0e7529a8d8msh594059cc195517dp1219c5jsnf24c1325987c'; 
 
 const Assignment3 = () => {
-  const [month, setMonth] = useState('1');
-  const [day, setDay] = useState('1');
+  const [month, setMonth] = useState('');
+  const [day, setDay] = useState('');
   const [fact, setFact] = useState('');
 
   useEffect(() => {
